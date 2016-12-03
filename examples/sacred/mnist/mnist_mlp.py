@@ -17,6 +17,7 @@ from keras.layers.core import Dense, Dropout, Activation
 from keras.models import Sequential
 from keras.utils import np_utils
 from sacred import Experiment, Ingredient
+from tempfile import NamedTemporaryFile
 
 dataset_ingredient = Ingredient('dataset')
 net_ingredient = Ingredient('feed_forward_network')
@@ -74,6 +75,14 @@ def create_model(input_shape, nb_classes, nb_layers, layer_width, dropout, activ
                   metrics=['accuracy'])
     return model
 
+def save_model(model):
+    """
+    Saved the model as an Sacred artifact.
+    """
+    with NamedTemporaryFile(suffix='_model.h5') as model_file:
+        model.save(model_file.name)
+        ex.add_artifact(model_file.name)
+
 @ex.config
 def ex_config():
     batch_size = 128
@@ -87,8 +96,11 @@ def main(batch_size, nb_epoch):
     history = model.fit(X_train, Y_train,
                         batch_size=batch_size, nb_epoch=nb_epoch,
                         verbose=1, validation_data=(X_test, Y_test))
+
+    save_model(model)
+
     score = model.evaluate(X_test, Y_test, verbose=0)
-    
+
     return {
         'history': history.history,
         'test_loss': score[0],
