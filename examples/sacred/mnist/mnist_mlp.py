@@ -10,6 +10,20 @@ Forked from: https://github.com/fchollet/keras/tree/master/examples
 
 This is a basic example how to wrap the code as Sacred Experiment
 (https://github.com/IDSIA/sacred).
+
+How to use:
+
+# help
+$ python mnist_mlp.py --help
+
+# normal run
+$ python mnist_mlp.py
+
+# print the configuration values
+$ python mnist_mlp.py print_config
+
+# change some parameters
+$ python mnist_mlp.py with nb_epoch=10 model.nb_layers=4 model.dropout=0.5
 """
 
 from keras.datasets import mnist
