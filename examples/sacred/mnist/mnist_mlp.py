@@ -17,12 +17,15 @@ from keras.layers.core import Dense, Dropout, Activation
 from keras.models import Sequential
 from keras.utils import np_utils
 from sacred import Experiment, Ingredient
+from sacred.utils import apply_backspaces_and_linefeeds
 from tempfile import NamedTemporaryFile
 
 dataset_ingredient = Ingredient('dataset')
 net_ingredient = Ingredient('feed_forward_network')
 
 ex = Experiment('mnist', ingredients=[dataset_ingredient, net_ingredient])
+# ignore the intermediate progressbar characters
+ex.captured_out_filter = apply_backspaces_and_linefeeds
 
 @dataset_ingredient.capture
 def load_data(nb_classes=10):
