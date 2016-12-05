@@ -9,7 +9,6 @@ model = get_model(get_run(run_id))
 """
 
 from bson.objectid import ObjectId
-import keras
 import pymongo
 from tempfile import TemporaryDirectory
 
@@ -49,6 +48,7 @@ def find_model_artifact(run, suffix='model.h5'):
 # We stored the model as a run artifact. The artifact file is stored in
 # multiple chunks which we need to put together.
 def model_from_chunks(model_chunks):
+    import keras
     # Since h5py doesn't allow reading from in-memory file-like objects,
     # let's store it to a temporary file.
     # http://stackoverflow.com/questions/16654251/can-h5py-load-a-file-from-a-byte-array-in-memory
