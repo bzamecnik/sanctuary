@@ -29,6 +29,9 @@ def list_experiment_runs(exp_name):
 def list_experiments():
     return runs_collection.distinct('experiment.name')
 
+def list_files():
+    return files_collection.find()
+
 def get_run(run_id):
     if isinstance(run_id, str):
         run_id = ObjectId(run_id)

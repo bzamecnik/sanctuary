@@ -25,6 +25,10 @@ def list_runs():
 def run_details(run_id):
     return jsonify(json.loads(bson_dumps(sacred_mongo.get_run(run_id))))
 
+@app.route("/files", methods=['GET'])
+def list_files():
+    return jsonify(json.loads(bson_dumps({'files': [f for f in sacred_mongo.list_files()]})))
+
 if __name__ == "__main__":
     # http://stackoverflow.com/questions/23639355/extremely-long-wait-time-when-loading-rest-resource-from-angularjs
     # app.run(host="0.0.0.0", threaded=True)
