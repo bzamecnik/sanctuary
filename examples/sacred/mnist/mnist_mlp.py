@@ -27,7 +27,8 @@ $ python mnist_mlp.py with nb_epoch=10 model.nb_layers=4 model.dropout=0.5
 """
 
 from keras.datasets import mnist
-from keras.layers.core import Dense, Dropout, Activation, Reshape
+from keras.layers.core import Activation, Dense, Dropout, Flatten, Reshape
+from keras.layers.convolutional import Convolution2D, MaxPooling2D
 from keras.models import Sequential
 from keras.utils import np_utils
 from sacred import Experiment, Ingredient
@@ -37,9 +38,14 @@ from tempfile import NamedTemporaryFile
 from keras_sacred import TrainingHistoryToSacredInfo
 
 dataset_ingredient = Ingredient('dataset')
-net_ingredient = Ingredient('model')
+net_fc_ingredient = Ingredient('model_fc')
+net_conv_ingredient = Ingredient('model_conv')
 
-ex = Experiment('mnist', ingredients=[dataset_ingredient, net_ingredient])
+ex = Experiment('mnist', ingredients=[
+    dataset_ingredient,
+    net_fc_ingredient,
+    net_conv_ingredient
+])
 # ignore the intermediate progressbar characters
 ex.captured_out_filter = apply_backspaces_and_linefeeds
 
@@ -61,8 +67,8 @@ def load_data(nb_classes=10):
 
     return X_train, Y_train, X_test, Y_test
 
-@net_ingredient.config
-def net_ingredient_config():
+@net_fc_ingredient.config
+def net_fc_ingredient_config():
     input_shape=(28, 28)
     nb_classes=10
     nb_layers=3
@@ -70,8 +76,8 @@ def net_ingredient_config():
     dropout=0.2
     activation='relu'
 
-@net_ingredient.capture
-def create_model(input_shape, nb_classes, nb_layers, layer_width, dropout, activation):
+@net_fc_ingredient.capture
+def create_fc_model(input_shape, nb_classes, nb_layers, layer_width, dropout, activation):
     model = Sequential()
     model.add(Reshape((input_shape[0] * input_shape[1],), input_shape=input_shape))
     for i in range(nb_layers - 1):
@@ -89,6 +95,59 @@ def create_model(input_shape, nb_classes, nb_layers, layer_width, dropout, activ
                   metrics=['accuracy'])
     return model
 
+@net_conv_ingredient.config
+def net_conv_ingredient_config():
+    input_shape=(28, 28)
+    nb_classes=10
+    nb_conv_blocks=1
+    dropout=0.2
+    activation='relu'
+    # number of convolutional filters to use
+    nb_filters = 32
+    # size of pooling area for max pooling
+    pool_size = (2, 2)
+    # convolution kernel size
+    kernel_size = (3, 3)
+    fc_layer_width = 128
+
+@net_conv_ingredient.capture
+def create_conv_model(input_shape, nb_classes, nb_conv_blocks,
+        nb_filters, pool_size, kernel_size, dropout, activation,
+        fc_layer_width):
+    model = Sequential()
+    nb_rows, nb_cols = input_shape
+    # add one dimension for the convolution filters
+    model.add(Reshape((nb_rows, nb_cols, 1), input_shape=input_shape))
+    for i in range(nb_conv_blocks):
+        model.add(Convolution2D(nb_filters, kernel_size[0], kernel_size[1],
+                                border_mode='valid'))
+        model.add(Activation(activation))
+        model.add(Convolution2D(nb_filters, kernel_size[0], kernel_size[1]))
+        model.add(Activation(activation))
+        model.add(MaxPooling2D(pool_size=pool_size))
+        if dropout > 0:
+            model.add(Dropout(dropout))
+    model.add(Flatten())
+    model.add(Dense(fc_layer_width))
+    model.add(Activation(activation))
+    model.add(Dropout(dropout))
+    model.add(Dense(nb_classes))
+    model.add(Activation('softmax'))
+
+    model.summary()
+
+    model.compile(loss='categorical_crossentropy',
+                  optimizer='adam',
+                  metrics=['accuracy'])
+    return model
+
+@ex.capture
+def create_model(model_arch):
+    if model_arch == 'fc':
+        return create_fc_model()
+    elif model_arch == 'conv':
+        return create_conv_model()
+
 def save_model(model):
     """
     Saved the model as an Sacred artifact.
@@ -101,9 +160,10 @@ def save_model(model):
 def ex_config():
     batch_size = 128
     nb_epoch = 20
+    model_arch = 'fc'
 
 @ex.automain
-def main(_run, batch_size, nb_epoch):
+def main(_run, batch_size, nb_epoch, model_arch):
     X_train, Y_train, X_test, Y_test = load_data()
     model = create_model()
 
