@@ -14,34 +14,34 @@ from tempfile import TemporaryDirectory
 
 mongo_client = pymongo.MongoClient()
 db = mongo_client['sacred']
+runs_collection = db['default.runs']
+chunks_collection = db['default.chunks']
+files_collection = db['default.files']
 
 def list_runs(exp_name=None):
-    return db['default.runs'].find({}, {'_id': True})
+    return runs_collection.find({}, {'_id': True})
 
 def list_experiment_runs(exp_name):
-    return db['default.runs'].find(
+    return runs_collection.find(
         {'experiment.name': exp_name},
         {'_id': True})
 
 def list_experiments():
-    return db['default.runs'].distinct('experiment.name')
+    return runs_collection.distinct('experiment.name')
 
 def get_run(run_id):
-    runs = db['default.runs']
     if isinstance(run_id, str):
         run_id = ObjectId(run_id)
-    return runs.find_one(run_id)
+    return runs_collection.find_one(run_id)
 
 def get_file_chunks(file_id):
-    chunks = db['default.chunks']
-    for chunk in chunks.find({'files_id': file_id}) \
+    for chunk in chunks_collection.find({'files_id': file_id}) \
         .sort([('n', pymongo.ASCENDING)]):
         yield chunk['data']
 
 def find_model_artifact(run, suffix='model.h5'):
-    files = db['default.files']
     for artifact_id in run['artifacts']:
-        artifact = files.find_one(artifact_id)
+        artifact = files_collection.find_one(artifact_id)
         if artifact['filename'].endswith(suffix):
             return artifact
 
