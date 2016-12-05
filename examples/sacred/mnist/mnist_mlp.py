@@ -34,6 +34,8 @@ from sacred import Experiment, Ingredient
 from sacred.utils import apply_backspaces_and_linefeeds
 from tempfile import NamedTemporaryFile
 
+from keras_sacred import TrainingHistoryToSacredInfo
+
 dataset_ingredient = Ingredient('dataset')
 net_ingredient = Ingredient('model')
 
@@ -106,13 +108,14 @@ def ex_config():
     nb_epoch = 20
 
 @ex.automain
-def main(batch_size, nb_epoch):
+def main(_run, batch_size, nb_epoch):
     X_train, Y_train, X_test, Y_test = load_data()
     model = create_model()
 
     history = model.fit(X_train, Y_train,
                         batch_size=batch_size, nb_epoch=nb_epoch,
-                        verbose=1, validation_data=(X_test, Y_test))
+                        verbose=1, validation_data=(X_test, Y_test),
+                        callbacks=[TrainingHistoryToSacredInfo(_run)])
 
     save_model(model)
 
