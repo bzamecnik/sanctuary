@@ -18,10 +18,10 @@ runs_collection = db['default.runs']
 chunks_collection = db['default.chunks']
 files_collection = db['default.files']
 
-def list_runs(exp_name=None):
+def list_runs():
     return runs_collection.find({}, {'_id': True})
 
-def list_experiment_runs(exp_name):
+def list_runs_by_experiment(exp_name):
     return runs_collection.find(
         {'experiment.name': exp_name},
         {'_id': True})

@@ -21,6 +21,10 @@ def experiments():
 def list_runs():
     return jsonify({'runs': [str(r['_id']) for r in sacred_mongo.list_runs()]})
 
+@app.route("/runs/by-experiment/<experiment_id>", methods=['GET'])
+def list_runs_by_experiment(experiment_id):
+    return jsonify({'runs': [str(r['_id']) for r in sacred_mongo.list_runs_by_experiment(experiment_id)]})
+
 @app.route("/runs/<run_id>", methods=['GET'])
 def run_details(run_id):
     return jsonify(json.loads(bson_dumps(sacred_mongo.get_run(run_id))))
