@@ -1,12 +1,10 @@
 """
 Trains a simple deep NN on the MNIST dataset.
 
-Gets to 98.40% test accuracy after 20 epochs
-(there is *a lot* of margin for parameter tuning).
-2 seconds per epoch on a K520 GPU.
+Allows to use multiple models (basic fully conncted layers, convolution layers).
 
-A basic example from Keras.
-Forked from: https://github.com/fchollet/keras/tree/master/examples
+Based on some basic example from Keras. Forked from:
+https://github.com/fchollet/keras/tree/master/examples
 
 This is a basic example how to wrap the code as Sacred Experiment
 (https://github.com/IDSIA/sacred).
@@ -14,16 +12,19 @@ This is a basic example how to wrap the code as Sacred Experiment
 How to use:
 
 # help
-$ python mnist_mlp.py --help
+$ python mnist.py --help
 
 # normal run
-$ python mnist_mlp.py
+$ python mnist.py
 
 # print the configuration values
-$ python mnist_mlp.py print_config
+$ python mnist.py print_config
 
 # change some parameters
-$ python mnist_mlp.py with nb_epoch=10 model.nb_layers=4 model.dropout=0.5
+$ python mnist.py with nb_epoch=10 model_fc.nb_layers=4 model_fc.dropout=0.5
+
+# change the architecture
+$ python mnist.py with model_arch='conv' model_conv.nb_filters=30
 """
 
 from keras.datasets import mnist
