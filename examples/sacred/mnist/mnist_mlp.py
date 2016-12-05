@@ -27,7 +27,7 @@ $ python mnist_mlp.py with nb_epoch=10 model.nb_layers=4 model.dropout=0.5
 """
 
 from keras.datasets import mnist
-from keras.layers.core import Dense, Dropout, Activation
+from keras.layers.core import Dense, Dropout, Activation, Reshape
 from keras.models import Sequential
 from keras.utils import np_utils
 from sacred import Experiment, Ingredient
@@ -49,10 +49,7 @@ def load_data(nb_classes=10):
     (X_train, y_train), (X_test, y_test) = mnist.load_data()
 
     def prepare_X(X):
-        X = X.reshape(X.shape[0], -1)
-        X = X.astype('float32')
-        X /= 255
-        return X
+        return X.astype('float32') / 255
 
     X_train, X_test = [prepare_X(X) for X in (X_train, X_test)]
     print(X_train.shape[0], 'train samples')
@@ -66,7 +63,7 @@ def load_data(nb_classes=10):
 
 @net_ingredient.config
 def net_ingredient_config():
-    input_shape=(784,)
+    input_shape=(28, 28)
     nb_classes=10
     nb_layers=3
     layer_width=512
@@ -76,11 +73,9 @@ def net_ingredient_config():
 @net_ingredient.capture
 def create_model(input_shape, nb_classes, nb_layers, layer_width, dropout, activation):
     model = Sequential()
+    model.add(Reshape((input_shape[0] * input_shape[1],), input_shape=input_shape))
     for i in range(nb_layers - 1):
-        if i == 0:
-            model.add(Dense(layer_width, input_shape=input_shape))
-        else:
-            model.add(Dense(layer_width))
+        model.add(Dense(layer_width))
         model.add(Activation(activation))
         if dropout > 0:
             model.add(Dropout(dropout))
