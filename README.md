@@ -1,12 +1,12 @@
-# melon
+# sanctuary
 
-Managed machine-learning model training tool.
+Managed machine-learning model training tool based on [sacred](https://github.com/IDSIA/sacred).
 
 The goal: help efficiently find good models via managed experiments.
 
 Status: trying to write down the vision and scope of the project.
 
-See the [wiki](https://github.com/bzamecnik/melon/wiki) for details.
+See the [wiki](https://github.com/bzamecnik/sanctuary/wiki) for details.
 
 ## Contact
 
