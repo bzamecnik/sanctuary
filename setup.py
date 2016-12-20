@@ -9,6 +9,8 @@ setup(name='sanctuary',
       zip_safe=False,
       py_modules=['sanctuary'],
       install_requires=[
+        'keras>=1.1.1',
+        'numpy',
         'sacred',
       ],
       setup_requires=['setuptools-markdown'],

@@ -11,7 +11,7 @@ class TrainingHistoryToSacredInfo(Callback):
     @ex.capture
     def train(_run):
         # ...
-        model.fit(X_train, Y_train, callbacks=[TrainingHistoryToSacredInfo(_run)])
+        model.fit(X_train, y_train, callbacks=[TrainingHistoryToSacredInfo(_run)])
     """
     def __init__(self, run):
         super(TrainingHistoryToSacredInfo, self).__init__()
