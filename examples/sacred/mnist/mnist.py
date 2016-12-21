@@ -36,7 +36,7 @@ from sacred import Experiment, Ingredient
 from sacred.utils import apply_backspaces_and_linefeeds
 from tempfile import NamedTemporaryFile
 
-from sanctuary.sacred_keras import TrainingHistoryToSacredInfo
+from sanctuary.keras.callbacks import TrainingHistoryToSacredInfo
 
 dataset_ingredient = Ingredient('dataset')
 net_fc_ingredient = Ingredient('model_fc')
