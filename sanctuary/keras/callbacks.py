@@ -61,7 +61,7 @@ def model_summary(model):
         model.summary()
     return str(output)
 
-def EvaluateOnSplit(Callback):
+class EvaluateOnSplit(Callback):
     """
     Evaluates the metrics on a split (eg. training) in test mode at the end of
     the epoch (so that's more comparable to evaluation on validation split).
