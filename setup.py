@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(name='sanctuary',
-      version='0.1.1',
+      version='0.1.2',
       description='Managed machine-learning model training tool based on sacred.',
       url='https://github.com/bzamecnik/sanctuary',
       author='Bohumir Zamecnik',
