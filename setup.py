@@ -1,13 +1,14 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(name='sanctuary',
-      version='0.1',
+      version='0.1.1',
       description='Managed machine-learning model training tool based on sacred.',
       url='https://github.com/bzamecnik/sanctuary',
       author='Bohumir Zamecnik',
       author_email='bohumir.zamecnik@gmail.com',
+      license='MIT',
+      packages=find_packages(exclude=['tests']),
       zip_safe=False,
-      py_modules=['sanctuary'],
       install_requires=[
         'keras>=1.1.1',
         'numpy',
@@ -15,6 +16,7 @@ setup(name='sanctuary',
       ],
       setup_requires=['setuptools-markdown'],
       long_description_markdown_filename='README.md',
+      # See https://pypi.python.org/pypi?%3Aaction=list_classifiers
       classifiers=[
           # How mature is this project? Common values are
           #   3 - Alpha
@@ -25,7 +27,7 @@ setup(name='sanctuary',
           'Intended Audience :: Developers',
           'Intended Audience :: Science/Research',
 
-          'License :: Other/Proprietary License',
+          'License :: OSI Approved :: MIT License',
 
           'Programming Language :: Python :: 3',
 
