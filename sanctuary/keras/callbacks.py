@@ -50,7 +50,7 @@ class ModelSummaryToSacredInfo(Callback):
 
     def on_train_begin(self, logs={}):
         self.run.info['model_summary'] = model_summary(self.model)
-        self.run.info['total_params'] = self.model.count_params()
+        self.run.info['total_params'] = int(self.model.count_params())
 
 def model_summary(model):
     """
